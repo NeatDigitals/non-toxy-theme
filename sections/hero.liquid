@@ -448,12 +448,14 @@
 
 <div
   id="Hero-{{ section.id }}"
-  class="hero color-{{ section.settings.color_scheme }}{% if section.blocks.size == 0 and section.settings.section_height == 'auto' %} hero--no-blocks-auto-height{% endif %}{% if section.settings.stack_media_on_mobile %} hero--stack-mobile{% endif %}"
+  class="hero color-{{ section.settings.color_scheme }}{% if section.blocks.size == 0 and section.settings.section_height == 'auto' %} hero--no-blocks-auto-height{% endif %}{% if section.settings.stack_media_on_mobile %} hero--stack-mobile{% endif %}{% if section.settings.container_layout %} hero--contained{% endif %}"
   style="
     --hero-border-style: {{ section.settings.border }};
     --hero-border-width: {{ section.settings.border_width }}px;
     --hero-border-opacity: {{ section.settings.border_opacity }}%;
     --blur-opacity: {{ section.settings.reflection_opacity | divided_by: 100.0 }};
+    --hero-container-radius: {{ section.settings.container_border_radius }}px;
+    --hero-container-margin: {{ section.settings.container_margin }}px;
     {% if section.settings.section_height == 'custom' %}
       --hero-min-height: {{ section.settings.section_height_custom }}svh;
     {% elsif section.settings.section_height == "full-screen" %}
@@ -548,6 +550,32 @@
   .hero {
     position: relative;
     min-height: calc(var(--hero-min-height) - var(--hero-height-offset));
+  }
+
+  /* Contained hero layout */
+  .hero--contained {
+    margin-inline: var(--hero-container-margin, 20px);
+    border-radius: var(--hero-container-radius, 0);
+    overflow: hidden;
+  }
+
+  .hero--contained .hero__container {
+    border-radius: var(--hero-container-radius, 0);
+  }
+
+  .hero--contained .hero__media-wrapper {
+    border-radius: var(--hero-container-radius, 0);
+  }
+
+  .hero--contained .hero__image,
+  .hero--contained .hero__video {
+    border-radius: var(--hero-container-radius, 0);
+  }
+
+  @media screen and (max-width: 749px) {
+    .hero--contained {
+      margin-inline: calc(var(--hero-container-margin, 20px) * 0.5);
+    }
   }
 
   .hero[data-shopify-visual-preview] {
@@ -957,6 +985,35 @@
     {
       "type": "header",
       "content": "t:content.layout"
+    },
+    {
+      "type": "checkbox",
+      "id": "container_layout",
+      "label": "Contained layout",
+      "info": "Display hero in a rounded container below navigation",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "container_border_radius",
+      "label": "Container border radius",
+      "min": 0,
+      "max": 50,
+      "step": 1,
+      "unit": "px",
+      "default": 16,
+      "visible_if": "{{ section.settings.container_layout }}"
+    },
+    {
+      "type": "range",
+      "id": "container_margin",
+      "label": "Container margin",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 20,
+      "visible_if": "{{ section.settings.container_layout }}"
     },
     {
       "type": "select",
